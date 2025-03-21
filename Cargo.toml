@@ -1,0 +1,10 @@
+[package]
+name = "test-release-automation"
+version = "0.1.0"
+edition = "2021"
+description = "testing release_plz"
+homepage = "https://developer.holochain.org"
+documentation = "https://developer.holochain.org"
+repository = "https://developer.holochain.org"
+
+[dependencies]
