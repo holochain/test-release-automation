@@ -21,6 +21,11 @@ pub fn divide(a: i32, b: i32) -> i32 {
     a / b
 }
 
+/// Raise a number to the power of the exponent value
+pub fn power(n: i32, exp: i32) -> i32 {
+    n.pow(exp as u32)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -51,4 +56,3 @@ mod tests {
         divide(6, 0);
     }
 }
-
