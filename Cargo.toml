@@ -5,6 +5,7 @@ edition = "2021"
 description = "testing release_plz"
 homepage = "https://developer.holochain.org"
 documentation = "https://developer.holochain.org"
+license = "MIT"
 repository = "https://developer.holochain.org"
 
 [dependencies]
