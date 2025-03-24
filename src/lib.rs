@@ -55,4 +55,9 @@ mod tests {
     fn test_divide_by_zero() {
         divide(6, 0);
     }
+
+    #[test]
+    fn test_power() {
+        assert_eq!(power(3, 3), 27);
+    }
 }
