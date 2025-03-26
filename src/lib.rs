@@ -1,3 +1,5 @@
+//! # v0.1
+
 /// A simple addition function
 pub fn add(a: i32, b: i32) -> i32 {
     a + b
@@ -56,4 +58,3 @@ mod tests {
         divide(6, 0);
     }
 }
-
