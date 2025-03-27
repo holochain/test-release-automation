@@ -1,3 +1,5 @@
+//! # v0.2.*
+
 /// A simple addition function
 pub fn add(a: f64, b: f64) -> f64 {
     a + b
