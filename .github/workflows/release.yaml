@@ -1,0 +1,303 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - "main"
+      - "main-0.4"
+      - "main-0.3"
+
+jobs:
+  check-for-release:
+    runs-on: ubuntu-latest
+    outputs:
+      should_release: ${{ steps.check-commit.outputs.should_release }}
+      version: ${{ steps.determine-version.outputs.version }}
+      release_branch: ${{ steps.create-release-branch.outputs.release_branch }}
+      base_branch: ${{ steps.get-base-branch.outputs.base_branch }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get base branch
+        id: get-base-branch
+        run: |
+          BASE_BRANCH=${GITHUB_REF#refs/heads/}
+          echo "base_branch=$BASE_BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Check commit message for release indicator
+        id: check-commit
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          if [[ "$COMMIT_MSG" == *"[release]"* ]]; then
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            echo "Release indicator found in commit message"
+          else
+            echo "should_release=false" >> $GITHUB_OUTPUT
+            echo "No release indicator found in commit message"
+          fi
+
+      - name: Determine version to release
+        id: determine-version
+        if: steps.check-commit.outputs.should_release == 'true'
+        run: |
+          BASE_BRANCH="${{ steps.get-base-branch.outputs.base_branch }}"
+
+          # Extract current version from Cargo.toml
+          CURRENT_VERSION=$(grep -m 1 "version = " Cargo.toml | sed 's/version = //g' | sed 's/"//g' | sed 's/ //g')
+          echo "Current version from Cargo.toml: $CURRENT_VERSION"
+
+          # Determine version bump based on branch
+          if [[ "$BASE_BRANCH" == "main" ]]; then
+            # For main branch, increment dev version (0.5.x-dev.y -> 0.5.x-dev.(y+1))
+            if [[ "$CURRENT_VERSION" =~ ^0\.5\.[0-9]+-dev\.[0-9]+$ ]]; then
+              BASE_VERSION=$(echo $CURRENT_VERSION | sed 's/-dev\.[0-9]\+$//')
+              DEV_NUM=$(echo $CURRENT_VERSION | sed 's/^.*-dev\.//')
+              NEW_DEV_NUM=$((DEV_NUM + 1))
+              VERSION="${BASE_VERSION}-dev.${NEW_DEV_NUM}"
+            else
+              # If not already a dev version, start with dev.1
+              VERSION="0.5.0-dev.1"
+            fi
+          elif [[ "$BASE_BRANCH" == "main-0.4" ]]; then
+            # For 0.4 branch, increment patch version
+            if [[ "$CURRENT_VERSION" =~ ^0\.4\.[0-9]+$ ]]; then
+              MAJOR_MINOR=$(echo $CURRENT_VERSION | cut -d. -f1,2)
+              PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+              NEW_PATCH=$((PATCH + 1))
+              VERSION="${MAJOR_MINOR}.${NEW_PATCH}"
+            else
+              # If version doesn't match pattern, use default 0.4.0
+              VERSION="0.4.0"
+            fi
+          elif [[ "$BASE_BRANCH" == "main-0.3" ]]; then
+            # For 0.3 branch, increment patch version
+            if [[ "$CURRENT_VERSION" =~ ^0\.3\.[0-9]+$ ]]; then
+              MAJOR_MINOR=$(echo $CURRENT_VERSION | cut -d. -f1,2)
+              PATCH=$(echo $CURRENT_VERSION | cut -d. -f3)
+              NEW_PATCH=$((PATCH + 1))
+              VERSION="${MAJOR_MINOR}.${NEW_PATCH}"
+            else
+              # If version doesn't match pattern, use default 0.3.0
+              VERSION="0.3.0"
+            fi
+          else
+            echo "Unsupported branch: $BASE_BRANCH"
+            exit 1
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Determined version: $VERSION for branch: $BASE_BRANCH"
+
+      - name: Create release branch name
+        id: create-release-branch
+        if: steps.check-commit.outputs.should_release == 'true'
+        run: |
+          RELEASE_BRANCH="release-${{ steps.determine-version.outputs.version }}"
+          echo "release_branch=$RELEASE_BRANCH" >> $GITHUB_OUTPUT
+
+  prepare-release:
+    needs: check-for-release
+    if: needs.check-for-release.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+
+      - name: Install cocogitto
+        run: cargo install cocogitto
+
+      - name: Set Git user
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Check for existing release PR
+        id: check-existing-pr
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: pulls } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${{ needs.check-for-release.outputs.release_branch }}`,
+              base: '${{ needs.check-for-release.outputs.base_branch }}'
+            });
+
+            if (pulls.length > 0) {
+              console.log(`Found existing PR: #${pulls[0].number}`);
+              return pulls[0].number;
+            }
+            return '';
+
+      - name: Create or update release branch
+        run: |
+          RELEASE_BRANCH="${{ needs.check-for-release.outputs.release_branch }}"
+          BASE_BRANCH="${{ needs.check-for-release.outputs.base_branch }}"
+
+          # Check if the release branch already exists locally
+          if git show-ref --verify --quiet refs/heads/$RELEASE_BRANCH; then
+            echo "Release branch already exists locally"
+            git checkout $RELEASE_BRANCH
+            git reset --hard origin/$BASE_BRANCH
+          else
+            # Check if it exists remotely
+            if git ls-remote --exit-code --heads origin $RELEASE_BRANCH; then
+              echo "Release branch exists remotely"
+              git fetch origin
+              git checkout -b $RELEASE_BRANCH origin/$RELEASE_BRANCH
+              git reset --hard origin/$BASE_BRANCH
+            else
+              # Create new branch
+              echo "Creating new release branch"
+              git checkout -b $RELEASE_BRANCH
+            fi
+          fi
+
+      - name: Update version with cocogitto
+        run: |
+          VERSION="${{ needs.check-for-release.outputs.version }}"
+          echo "Bumping version to $VERSION"
+          cog bump --auto-dev-map --version $VERSION
+
+      - name: Generate changelog
+        id: generate-changelog
+        run: |
+          CHANGELOG=$(cog changelog --at v${{ needs.check-for-release.outputs.version }})
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Push changes
+        run: |
+          git push -f origin ${{ needs.check-for-release.outputs.release_branch }}
+
+      - name: Create or update PR
+        id: create-or-update-pr
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const existingPrNumber = '${{ steps.check-existing-pr.outputs.result }}';
+            const changelog = `${{ steps.generate-changelog.outputs.changelog }}`;
+            const version = '${{ needs.check-for-release.outputs.version }}';
+            const releaseBranch = '${{ needs.check-for-release.outputs.release_branch }}';
+            const baseBranch = '${{ needs.check-for-release.outputs.base_branch }}';
+
+            const prBody = `This PR prepares the release of v${version}
+
+            ## Changelog
+            \`\`\`
+            ${changelog}
+            \`\`\`
+            `;
+
+            if (existingPrNumber) {
+              // Update existing PR
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: parseInt(existingPrNumber),
+                title: `Release v${version}`,
+                body: prBody
+              });
+              console.log(`Updated PR #${existingPrNumber}`);
+              return existingPrNumber;
+            } else {
+              // Create new PR
+              const { data: newPr } = await github.rest.pulls.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Release v${version}`,
+                body: prBody,
+                head: releaseBranch,
+                base: baseBranch
+              });
+              
+              // Add release label
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: newPr.number,
+                labels: ['release']
+              });
+              
+              console.log(`Created PR #${newPr.number}`);
+              return newPr.number;
+            }
+
+      - name: PR URL
+        run: |
+          echo "PR URL: https://github.com/${{ github.repository }}/pull/${{ steps.create-or-update-pr.outputs.result }}"
+
+  publish-crate:
+    needs: [check-for-release]
+    if: github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'release')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+
+      - name: Extract version
+        id: extract-version
+        run: |
+          VERSION=$(grep -m 1 "version = " Cargo.toml | sed 's/version = //g' | sed 's/"//g' | sed 's/ //g')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Login to crates.io
+        uses: actions-rs/cargo@v1
+        with:
+          command: login
+          args: ${{ secrets.CRATES_IO_TOKEN }}
+
+      - name: Publish to crates.io
+        uses: actions-rs/cargo@v1
+        with:
+          command: publish
+
+      - name: Create Git tag
+        run: |
+          git tag -a "v${{ steps.extract-version.outputs.version }}" -m "Release v${{ steps.extract-version.outputs.version }}"
+          git push origin "v${{ steps.extract-version.outputs.version }}"
+
+      - name: Generate Changelog for Release
+        id: generate-changelog
+        run: |
+          CHANGELOG=$(cog changelog --at v${{ steps.extract-version.outputs.version }})
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.extract-version.outputs.version }}
+          name: Release v${{ steps.extract-version.outputs.version }}
+          body: |
+            # Changelog
+
+            ${{ steps.generate-changelog.outputs.changelog }}
+          draft: false
+          prerelease: ${{ contains(steps.extract-version.outputs.version, '-dev') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
