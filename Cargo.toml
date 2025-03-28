@@ -9,3 +9,5 @@ license = "MIT"
 repository = "https://developer.holochain.org"
 
 [dependencies]
+
+[dev-dependencies]
