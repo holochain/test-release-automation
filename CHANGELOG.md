@@ -3,6 +3,29 @@ All notable changes to this project will be documented in this file. See [conven
 
 - - -
 ## v0.3.0 - 2025-03-28
+#### Continuous Integration
+- Update release.yaml - (7904c7c) - Collins Muriuki
+- prep release-plz - (1e93bcd) - Collins Muriuki
+#### Documentation
+- update readme - (d5629b6) - Collins Muriuki
+- Update rustdocs - (b873e58) - Collins Muriuki
+#### Features
+- breaking change - (ed37d3c) - Collins Muriuki
+- Add a power method - (7d497e2) - Collins Muriuki
+- Add extra methods - (6a0c103) - Collins Muriuki
+#### Miscellaneous Chores
+- **(version)** v0.3.0 - (7143cea) - Collins Muriuki
+- Remove release-plz workflows and config - (a8a0de1) - Collins Muriuki
+- setup cocogitto - (0bef87f) - Collins Muriuki
+- release v0.2.1 - (60c43ab) - Holochain Release Automation
+- release v0.1.1 - (9ba2c38) - Holochain Release Automation
+- rename release-plz to release - (8fd1603) - Collins Muriuki
+- Add power test - (13f7116) - Collins Muriuki
+- Initial commit - (4407c50) - Collins Muriuki
+
+- - -
+
+## v0.3.0 - 2025-03-28
 
 - - -
 
