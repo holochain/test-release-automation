@@ -44,6 +44,9 @@ jobs:
       - name: Bump version
         run: cog bump --auto
 
+      - name: Push branch to remote
+        run: git push origin release-${{ steps.timestamp.outputs.timestamp }}
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
