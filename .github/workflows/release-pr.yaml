@@ -1,4 +1,4 @@
-name: Release Preparation
+name: Release PR
 on:
   push:
     branches:
@@ -65,18 +65,24 @@ jobs:
         if: steps.extract_version.outputs.is_dev != 'true' || steps.get_branch.outputs.branch != 'main'
         run: cog bump --auto
 
+      - name: Get bumped version
+        id: bumped_version
+        run: |
+          BUMPED_VERSION=$(grep -m 1 'version = ' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "version=$BUMPED_VERSION" >> $GITHUB_OUTPUT
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.RELEASE_PLZ_TOKEN }}
-          commit-message: "chore: prepare release"
+          commit-message: "chore: release v${{ steps.bumped_version.outputs.version }}"
           committer: "Holochain Release Automation <hra+gh@holochain.org>"
-          title: "chore: prepare release from ${{ steps.get_branch.outputs.branch }}"
+          title: "chore: prepare release v${{ steps.bumped_version.outputs.version }}"
           body: |
             This PR was automatically generated to prepare a new release.
 
             Changes:
-            - Version bump via cocogitto
+            - Version bump to v${{ steps.bumped_version.outputs.version }}
             - Updated CHANGELOG.md
           branch: release-${{ steps.timestamp.outputs.timestamp }}
           base: ${{ steps.get_branch.outputs.branch }}
