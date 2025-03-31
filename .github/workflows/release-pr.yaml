@@ -19,8 +19,13 @@ jobs:
       - name: Setup Rust toolchain
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Setup Rust Cache
-        uses: Swatinem/rust-cache@v2
+      - name: Cache cargo bins
+        uses: actions/cache@v4
+        id: cache-cargo-bins
+        with:
+          path: |
+            ~/.cargo/bin/
+          key: ${{ runner.os }}-cargo-bins-${{ hashFiles('**/Cargo.lock') }}-cocogitto-cargo-edit
 
       - name: Install cocogitto
         run: cargo install cocogitto
@@ -68,29 +73,48 @@ jobs:
       - name: Fix changelog
         if: steps.check_tags.outputs.has_tags == 'true'
         run: |
-          # Backup the current CHANGELOG.md
+          # If changelog exists, save header (title and conventional commits line)
           if [ -f CHANGELOG.md ]; then
-            cp CHANGELOG.md CHANGELOG.md.bak
-          fi
-          
-          # Generate changelog only from latest tag to HEAD
-          cog changelog --at ${{ steps.check_tags.outputs.latest_tag }} > CHANGELOG.md.new
-          
-          # Get the new version header (first section) from the new changelog
-          awk '/^## / {if (count++ == 1) exit} {print}' CHANGELOG.md.new > CHANGELOG.header.md
-          
-          # Get the old changelog content without its first header
-          if [ -f CHANGELOG.md.bak ]; then
-            awk 'NR>1' CHANGELOG.md.bak > CHANGELOG.old.md
+            # Save the header (first 2 lines)
+            head -n 2 CHANGELOG.md > CHANGELOG.header
             
-            # Combine them
-            cat CHANGELOG.header.md CHANGELOG.old.md > CHANGELOG.md
+            # Run cog bump which will update version in Cargo.toml and generate a changelog entry
+            # But the changelog might have duplicates
+            
+            # Create a clean changelog with just the newest version entry
+            CURRENT_VERSION=$(grep -m 1 'version = ' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+            
+            # Extract just the newest section for the current version
+            cat CHANGELOG.md | awk -v version="$CURRENT_VERSION" '
+              BEGIN { printing = 0; header_found = 0; }
+              /^## v'"$CURRENT_VERSION"'/ { 
+                printing = 1;
+                header_found = 1;
+              }
+              /^## v[0-9]/ { 
+                if (header_found && $0 !~ /^## v'"$CURRENT_VERSION"'/) { 
+                  printing = 0; 
+                }
+              }
+              { if (printing) print $0; }
+            ' > CHANGELOG.newest
+            
+            # Get everything after the second line of the original CHANGELOG
+            tail -n +3 CHANGELOG.md > CHANGELOG.old
+            
+            # Create new CHANGELOG with header, newest entry, separator, and old content
+            cat CHANGELOG.header > CHANGELOG.new
+            echo "" >> CHANGELOG.new  # Empty line after header
+            echo "- - -" >> CHANGELOG.new  # Separator
+            cat CHANGELOG.newest >> CHANGELOG.new
+            echo "" >> CHANGELOG.new  # Empty line after new content
+            cat CHANGELOG.old >> CHANGELOG.new
+            
+            # Replace original changelog
+            mv CHANGELOG.new CHANGELOG.md
             
             # Clean up temporary files
-            rm CHANGELOG.header.md CHANGELOG.old.md CHANGELOG.md.bak CHANGELOG.md.new
-          else
-            # If no backup exists, just use the new file
-            mv CHANGELOG.md.new CHANGELOG.md
+            rm CHANGELOG.header CHANGELOG.newest CHANGELOG.old
           fi
 
       - name: Get bumped version
