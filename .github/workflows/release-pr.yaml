@@ -70,51 +70,32 @@ jobs:
         if: steps.extract_version.outputs.is_dev != 'true' || steps.get_branch.outputs.branch != 'main'
         run: cog bump --auto
 
-      - name: Fix changelog
+      - name: Update changelog
         if: steps.check_tags.outputs.has_tags == 'true'
         run: |
-          # If changelog exists, save header (title and conventional commits line)
+          # Backup header (first 2 lines)
           if [ -f CHANGELOG.md ]; then
-            # Save the header (first 2 lines)
+            # Get just the header (first 2 lines)
             head -n 2 CHANGELOG.md > CHANGELOG.header
             
-            # Run cog bump which will update version in Cargo.toml and generate a changelog entry
-            # But the changelog might have duplicates
-            
-            # Create a clean changelog with just the newest version entry
-            CURRENT_VERSION=$(grep -m 1 'version = ' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
-            
-            # Extract just the newest section for the current version
-            cat CHANGELOG.md | awk -v version="$CURRENT_VERSION" '
-              BEGIN { printing = 0; header_found = 0; }
-              /^## v'"$CURRENT_VERSION"'/ { 
-                printing = 1;
-                header_found = 1;
-              }
-              /^## v[0-9]/ { 
-                if (header_found && $0 !~ /^## v'"$CURRENT_VERSION"'/) { 
-                  printing = 0; 
-                }
-              }
-              { if (printing) print $0; }
-            ' > CHANGELOG.newest
-            
-            # Get everything after the second line of the original CHANGELOG
+            # Get everything after header
             tail -n +3 CHANGELOG.md > CHANGELOG.old
             
-            # Create new CHANGELOG with header, newest entry, separator, and old content
+            # Generate changelog just for the changes since the latest tag
+            cog changelog --at ${{ steps.check_tags.outputs.latest_tag }} > CHANGELOG.new_section
+            
+            # Create new CHANGELOG with: header + new section + old content
             cat CHANGELOG.header > CHANGELOG.new
             echo "" >> CHANGELOG.new  # Empty line after header
-            echo "- - -" >> CHANGELOG.new  # Separator
-            cat CHANGELOG.newest >> CHANGELOG.new
-            echo "" >> CHANGELOG.new  # Empty line after new content
+            echo "- - -" >> CHANGELOG.new  # Separator line
+            cat CHANGELOG.new_section >> CHANGELOG.new
             cat CHANGELOG.old >> CHANGELOG.new
             
             # Replace original changelog
             mv CHANGELOG.new CHANGELOG.md
             
             # Clean up temporary files
-            rm CHANGELOG.header CHANGELOG.newest CHANGELOG.old
+            rm CHANGELOG.header CHANGELOG.old CHANGELOG.new_section
           fi
 
       - name: Get bumped version
