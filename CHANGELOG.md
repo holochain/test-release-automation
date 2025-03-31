@@ -2,6 +2,24 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.1-dev.5 - 2025-03-31
+#### Bug Fixes
+- ensure changelog diff is committed - (46aed73) - Collins Muriuki
+- skip cargo bin installation if cache hit - (ea6ef32) - Collins Muriuki
+- improve changelog generation - (0806826) - Collins Muriuki
+- fix changelog append - (42c93c5) - Collins Muriuki
+#### Features
+- add num dependency - (4a08618) - Collins Muriuki
+#### Miscellaneous Chores
+- **(version)** v0.2.1-dev.5 - (f691733) - holochain-release-automation2
+- **(version)** v0.2.1-dev.4 - (0a2f213) - holochain-release-automation2
+- update changelog gen - (bf0ce7f) - Collins Muriuki
+- update workflow file - (4a2a805) - Collins Muriuki
+- update cog config - (ec36fc1) - Collins Muriuki
+
+
+
+- - -
 ## v0.2.1-dev.4 - 2025-03-28
 #### Continuous Integration
 - update release-pr workflow - (484c792) - Collins Muriuki
