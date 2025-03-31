@@ -5,6 +5,10 @@ on:
       - main
       - main-0.1
       - main-0.2
+    paths-ignore:
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "CHANGELOG.md"
 jobs:
   prepare-release:
     name: Prepare Release PR
@@ -73,36 +77,46 @@ jobs:
         run: cog bump --auto
 
       - name: Update changelog
-        if: steps.check_tags.outputs.has_tags == 'true'
         run: |
-          # Backup header (first 2 lines)
+          # Backup the original CHANGELOG.md if it exists
           if [ -f CHANGELOG.md ]; then
-            # Get just the header (first 2 lines)
-            head -n 2 CHANGELOG.md > CHANGELOG.header
+            cp CHANGELOG.md CHANGELOG.md.bak
+          fi
+
+          # Get the latest tag to use as reference
+          LATEST_TAG=$(git tag -l "v*" | sort -V | tail -n 1)
+
+          # Generate changelog just for the changes since the latest tag and filter out newlines
+          cog changelog --at ${LATEST_TAG} | awk 'NR > 1 && !NF && !prev { skip=1 } { if (!skip) print; skip=0; prev=!NF }' > CHANGELOG.new_section
+
+          # If an existing CHANGELOG exists, merge
+          if [ -f CHANGELOG.md.bak ]; then
+            # Get the header
+            head -n 2 CHANGELOG.md.bak > CHANGELOG.header
             
-            # Get everything after header
-            tail -n +3 CHANGELOG.md > CHANGELOG.old
+            # Get everything else from the old changelog
+            tail -n +3 CHANGELOG.md.bak > CHANGELOG.old
             
-            # Generate changelog just for the changes since the latest tag
-            cog changelog --at ${{ steps.check_tags.outputs.latest_tag }} > CHANGELOG.new_section
-            
-            # Create new CHANGELOG with: header + new section + old content
+            # Create new CHANGELOG with: header + new section + separator + old content
             cat CHANGELOG.header > CHANGELOG.new
-            echo "" >> CHANGELOG.new  # Empty line after header
-            echo "- - -" >> CHANGELOG.new  # Separator line
+            echo "" >> CHANGELOG.new
+            echo "- - -" >> CHANGELOG.new 
             cat CHANGELOG.new_section >> CHANGELOG.new
             cat CHANGELOG.old >> CHANGELOG.new
             
-            # Replace original changelog
+            # Replace the changelog
             mv CHANGELOG.new CHANGELOG.md
-
-            # Clean up temporary files
-            rm CHANGELOG.header CHANGELOG.old CHANGELOG.new_section
-
-            # Commit the fixed changelog
-            git add CHANGELOG.md
-            git commit --amend --no-edit
+          else
+            # If no existing changelog, use the generated one directly
+            cat CHANGELOG.new_section > CHANGELOG.md
           fi
+
+          # Clean up
+          rm -f CHANGELOG.md.bak CHANGELOG.new_section CHANGELOG.header CHANGELOG.old 2>/dev/null || true
+
+          # Commit the updated changelog
+          git add CHANGELOG.md
+          git commit --amend --no-edit
 
       - name: Get bumped version
         id: bumped_version
