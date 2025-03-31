@@ -58,24 +58,15 @@ jobs:
       - name: Generate release notes
         id: release_notes
         run: |
-          # Get previous tag to compare against
           PREV_TAG=$(git tag -l "v*" | grep -v "${{ steps.get_version.outputs.tag_name }}" | sort -V | tail -n 1)
-
-          # Generate changelog
-          CHANGELOG=$(cog changelog --at $PREV_TAG | awk '$0 == "" && prev == "" && prevprev == "" {next} {prevprev=prev; prev=$0; print}')
-
-          # Save to file and GitHub output (with special handling for multiline output)
-          echo "$CHANGELOG" > release_notes.md
-          echo "notes<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGELOG" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "notes=$(cog changelog --at $PREV_TAG)" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.get_version.outputs.tag_name }}
           name: Release ${{ steps.get_version.outputs.tag_name }}
-          body_path: release_notes.md
+          body: ${{ steps.release_notes.outputs.notes }}
           draft: false
           token: ${{ secrets.RELEASE_PLZ_TOKEN }}
 
