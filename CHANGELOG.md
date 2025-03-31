@@ -2,6 +2,69 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.1-dev.5 - 2025-03-31
+#### Bug Fixes
+- fix changelog append - (42c93c5) - Collins Muriuki
+#### Features
+- add num dependency - (4a08618) - Collins Muriuki
+#### Miscellaneous Chores
+- **(version)** v0.2.1-dev.4 - (0a2f213) - holochain-release-automation2
+- update cog config - (ec36fc1) - Collins Muriuki
+
+- - -
+
+## v0.2.1-dev.4 - 2025-03-31
+#### Continuous Integration
+- update release-pr workflow - (484c792) - Collins Muriuki
+- handle pre bumps - (42fd6ed) - Collins Muriuki
+- ensure cargo-edit is installed - (6d1242f) - Collins Muriuki
+#### Miscellaneous Chores
+- **(version)** v0.2.1-dev.3 - (1a049a7) - holochain-release-automation2
+- add dev-dependency - (145f622) - Collins Muriuki
+- delete changelog - (4925eb9) - Collins Muriuki
+
+- - -
+
+## v0.2.1-dev.2 - 2025-03-31
+#### Bug Fixes
+- Ensure changes are committed - (dbe111c) - Collins Muriuki
+- Fix push - (2e22cc9) - Collins Muriuki
+- Ensure that the new branch is pushed - (db8942b) - Collins Muriuki
+#### Continuous Integration
+- Update release-pr workflow - (1f0e2d8) - Collins Muriuki
+- Update release-pr workflow - (fa5c443) - Collins Muriuki
+- Rename ci workflow - (23bdb5d) - Collins Muriuki
+- Update workflow - (11e0ef6) - Collins Muriuki
+- Add release workflow - (27c4d05) - Collins Muriuki
+- Update release.yaml - (7904c7c) - Collins Muriuki
+- prep release-plz - (1e93bcd) - Collins Muriuki
+#### Documentation
+- update readme - (d5629b6) - Collins Muriuki
+- Update rustdocs - (b873e58) - Collins Muriuki
+#### Features
+- breaking change - (ed37d3c) - Collins Muriuki
+- Add a power method - (7d497e2) - Collins Muriuki
+- Add extra methods - (6a0c103) - Collins Muriuki
+#### Miscellaneous Chores
+- **(version)** v0.2.1-dev.2 - (f6a7433) - Collins Muriuki
+- **(version)** v0.3.0 - (fd70750) - Collins Muriuki
+- extend pre-bump hook - (91f1533) - Collins Muriuki
+- Update cocogitto config - (8ac8898) - Collins Muriuki
+- Update changelog - (92cdba8) - Collins Muriuki
+- r/GITHUB_TOKEN/RELEASE_PLZ_TOKEN/g - (322f422) - Collins Muriuki
+- Bump version - (36ae638) - Collins Muriuki
+- Bump to dev version - (7eae1b4) - Collins Muriuki
+- add tag prefix option - (f48d2c4) - Collins Muriuki
+- Remove release-plz workflows and config - (a8a0de1) - Collins Muriuki
+- setup cocogitto - (0bef87f) - Collins Muriuki
+- release v0.2.1 - (60c43ab) - Holochain Release Automation
+- release v0.1.1 - (9ba2c38) - Holochain Release Automation
+- rename release-plz to release - (8fd1603) - Collins Muriuki
+- Add power test - (13f7116) - Collins Muriuki
+- Initial commit - (4407c50) - Collins Muriuki
+
+- - -
+
 ## v0.2.1-dev.4 - 2025-03-28
 #### Continuous Integration
 - update release-pr workflow - (484c792) - Collins Muriuki
