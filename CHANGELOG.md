@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.1-dev.12 - 2025-03-31
+#### Continuous Integration
+- consolidate workflows - (c472a64) - Collins Muriuki
+#### Miscellaneous Chores
+- **(version)** v0.2.1-dev.12 - (cadbc64) - holochain-release-automation2
+- **(version)** v0.2.1-dev.11 - (39de79a) - holochain-release-automation2
+
+
+- - -
 ## v0.2.1-dev.11 - 2025-03-31
 #### Continuous Integration
 - consolidate workflows - (c472a64) - Collins Muriuki
