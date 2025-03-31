@@ -75,34 +75,33 @@ jobs:
       - name: Update changelog
         if: steps.check_tags.outputs.has_tags == 'true'
         run: |
-          # Backup header (first 2 lines)
-          if [ -f CHANGELOG.md ]; then
-            # Get just the header (first 2 lines)
-            head -n 2 CHANGELOG.md > CHANGELOG.header
-            
-            # Get everything after header
-            tail -n +3 CHANGELOG.md > CHANGELOG.old
-            
-            # Generate changelog just for the changes since the latest tag
-            cog changelog --at ${{ steps.check_tags.outputs.latest_tag }} > CHANGELOG.new_section
-            
-            # Create new CHANGELOG with: header + new section + old content
-            cat CHANGELOG.header > CHANGELOG.new
-            echo "" >> CHANGELOG.new  # Empty line after header
-            echo "- - -" >> CHANGELOG.new  # Separator line
-            cat CHANGELOG.new_section >> CHANGELOG.new
-            cat CHANGELOG.old >> CHANGELOG.new
-            
-            # Replace original changelog
-            mv CHANGELOG.new CHANGELOG.md
+          # Get just the header (first 2 lines)
+          head -n 2 CHANGELOG.md > CHANGELOG.header
+          
+          # Get everything after header
+          tail -n +3 CHANGELOG.md > CHANGELOG.old
+         
+          cog changelog --at ${{ steps.check_tags.outputs.latest_tag }}
 
-            # Clean up temporary files
-            rm CHANGELOG.header CHANGELOG.old CHANGELOG.new_section
+          # Generate changelog just for the changes since the latest tag
+          cog changelog --at ${{ steps.check_tags.outputs.latest_tag }} > CHANGELOG.new_section
+          
+          # Create new CHANGELOG with: header + new section + old content
+          cat CHANGELOG.header > CHANGELOG.new
+          echo "" >> CHANGELOG.new  # Empty line after header
+          echo "- - -" >> CHANGELOG.new  # Separator line
+          cat CHANGELOG.new_section >> CHANGELOG.new
+          cat CHANGELOG.old >> CHANGELOG.new
+          
+          # Replace original changelog
+          mv CHANGELOG.new CHANGELOG.md
 
-            # Commit the fixed changelog
-            git add CHANGELOG.md
-            git commit --amend --no-edit
-          fi
+          # Clean up temporary files
+          rm CHANGELOG.header CHANGELOG.old CHANGELOG.new_section
+
+          # Commit the fixed changelog
+          git add CHANGELOG.md
+          git commit --amend --no-edit
 
       - name: Get bumped version
         id: bumped_version
