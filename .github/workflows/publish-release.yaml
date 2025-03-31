@@ -59,7 +59,10 @@ jobs:
         id: release_notes
         run: |
           PREV_TAG=$(git tag -l "v*" | grep -v "${{ steps.get_version.outputs.tag_name }}" | sort -V | tail -n 1)
-          echo "notes=$(cog changelog --at $PREV_TAG)" >> $GITHUB_OUTPUT
+
+          echo "notes=<<EOF" >> $GITHUB_OUTPUT
+          cog changelog --at $PREV_TAG >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
