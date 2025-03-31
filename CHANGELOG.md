@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.1-dev.6 - 2025-03-31
+#### Bug Fixes
+- Tag creation permissions error - (65237f8) - Collins Muriuki
+#### Miscellaneous Chores
+- **(version)** v0.2.1-dev.6 - (d3da170) - holochain-release-automation2
+- **(version)** v0.2.1-dev.5 - (5dd3acd) - holochain-release-automation2
+
+
+- - -
 ## v0.2.1-dev.5 - 2025-03-31
 #### Bug Fixes
 - ensure changelog diff is committed - (46aed73) - Collins Muriuki
