@@ -95,9 +95,13 @@ jobs:
             
             # Replace original changelog
             mv CHANGELOG.new CHANGELOG.md
-            
+
             # Clean up temporary files
             rm CHANGELOG.header CHANGELOG.old CHANGELOG.new_section
+
+            # Commit the fixed changelog
+            git add CHANGELOG.md
+            git commit --amend --no-edit
           fi
 
       - name: Get bumped version
