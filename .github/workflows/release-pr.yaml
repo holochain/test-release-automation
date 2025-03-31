@@ -65,6 +65,34 @@ jobs:
         if: steps.extract_version.outputs.is_dev != 'true' || steps.get_branch.outputs.branch != 'main'
         run: cog bump --auto
 
+      - name: Fix changelog
+        if: steps.check_tags.outputs.has_tags == 'true'
+        run: |
+          # Backup the current CHANGELOG.md
+          if [ -f CHANGELOG.md ]; then
+            cp CHANGELOG.md CHANGELOG.md.bak
+          fi
+          
+          # Generate changelog only from latest tag to HEAD
+          cog changelog --at ${{ steps.check_tags.outputs.latest_tag }} > CHANGELOG.md.new
+          
+          # Get the new version header (first section) from the new changelog
+          awk '/^## / {if (count++ == 1) exit} {print}' CHANGELOG.md.new > CHANGELOG.header.md
+          
+          # Get the old changelog content without its first header
+          if [ -f CHANGELOG.md.bak ]; then
+            awk 'NR>1' CHANGELOG.md.bak > CHANGELOG.old.md
+            
+            # Combine them
+            cat CHANGELOG.header.md CHANGELOG.old.md > CHANGELOG.md
+            
+            # Clean up temporary files
+            rm CHANGELOG.header.md CHANGELOG.old.md CHANGELOG.md.bak CHANGELOG.md.new
+          else
+            # If no backup exists, just use the new file
+            mv CHANGELOG.md.new CHANGELOG.md
+          fi
+
       - name: Get bumped version
         id: bumped_version
         run: |
