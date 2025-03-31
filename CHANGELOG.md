@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.1-dev.8 - 2025-03-31
+#### Miscellaneous Chores
+- **(version)** v0.2.1-dev.8 - (5183925) - holochain-release-automation2
+
+
+- - -
 ## v0.2.1-dev.7 - 2025-03-31
 #### Bug Fixes
 - fix release notes generation - (3754ddc) - Collins Muriuki
