@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## v0.2.1-dev.12 - 2025-03-31
+#### Miscellaneous Chores
+- **(version)** v0.2.1-dev.12 - (8d47e03) - holochain-release-automation2
+- update cog.toml - (011cd7e) - Collins Muriuki
+
+
+- - -
 ## v0.2.1-dev.11 - 2025-03-31
 #### Continuous Integration
 - consolidate workflows - (799f9e9) - Collins Muriuki
