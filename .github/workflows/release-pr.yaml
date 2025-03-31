@@ -28,9 +28,11 @@ jobs:
           key: ${{ runner.os }}-cargo-bins-${{ hashFiles('**/Cargo.lock') }}-cocogitto-cargo-edit
 
       - name: Install cocogitto
+        if: steps.cache-cargo-bins.outputs.cache-hit != 'true'
         run: cargo install cocogitto
 
       - name: Install cargo-edit
+        if: steps.cache-cargo-bins.outputs.cache-hit != 'true'
         run: cargo install cargo-edit
 
       - name: Get current branch name
