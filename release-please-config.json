@@ -1,0 +1,42 @@
+{
+  "packages": {
+    "crates/core": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "rust",
+      "include-v-in-tag": true,
+      "versioning": "default",
+      "draft": false,
+      "prerelease": false,
+      "initial-version": "0.1.0",
+      "package-name": "my-core",
+      "skip-github-release": false
+    },
+    "crates/cli": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "rust",
+      "include-v-in-tag": true,
+      "versioning": "default",
+      "draft": false,
+      "prerelease": false,
+      "initial-version": "0.1.0",
+      "package-name": "my-cli",
+      "skip-github-release": false
+    },
+    "crates/web": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "rust",
+      "include-v-in-tag": true,
+      "versioning": "default",
+      "draft": false,
+      "prerelease": false,
+      "initial-version": "0.1.0",
+      "package-name": "my-web",
+      "skip-github-release": false
+    }
+  },
+  "group-pull-request-title-pattern": "chore: release ${branch}",
+  "include-component-in-tag": true,
+  "plugins": ["cargo-workspace"],
+  "pull-request-header": "**Version Update**: This PR contains version updates and changelog changes.",
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
+}

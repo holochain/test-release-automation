@@ -1,0 +1,16 @@
+[workspace]
+members = ["crates/cli", "crates/core", "crates/web"]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+version = "0.1.0"
+description = "testing release automation"
+homepage = "https://developer.holochain.org"
+authors = ["c12i <collins.muriuki@holochain.org>"]
+documentation = "https://developer.holochain.org"
+license = "MIT"
+repository = "https://developer.holochain.org"
+
+[workspace.metadata.workspaces]
+independent = true
