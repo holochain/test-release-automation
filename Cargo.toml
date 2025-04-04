@@ -3,6 +3,7 @@ members = ["crates/cli", "crates/core", "crates/web"]
 
 [workspace.package]
 edition = "2021"
+version = "0.2.0-dev.0"
 description = "testing release automation"
 homepage = "https://developer.holochain.org"
 authors = ["c12i <collins.muriuki@holochain.org>"]

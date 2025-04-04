@@ -57,6 +57,8 @@
       "package-name": "my-web"
     }
   },
+  "group-pull-request-title-pattern": "chore(${branch}): release ${version}",
+  "include-component-in-tag": false,
   "plugins": ["cargo-workspace"],
   "prerelease-type": "dev",
   "pull-request-header": "## Version Update: This PR contains version updates and changelog changes.",
