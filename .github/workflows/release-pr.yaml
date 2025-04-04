@@ -47,6 +47,6 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         run: cargo login ${{ secrets.CRATES_IO_TOKEN }}
 
-      - name: Publish
+      - name: Publish crates
         if: ${{ steps.release.outputs.release_created }}
-        run: exit 0
+        run: cargo workspaces publish --yes --from-git
