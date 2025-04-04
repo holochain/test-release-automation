@@ -1,6 +1,6 @@
 [package]
 name = "test_ra_web"
-version = "0.2.0-dev.0"
+version = "0.2.0-dev.1"
 edition.workspace = true
 description.workspace = true
 homepage.workspace = true
