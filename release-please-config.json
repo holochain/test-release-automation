@@ -9,7 +9,8 @@
       "draft": false,
       "prerelease": true,
       "initial-version": "0.2.0-dev.0",
-      "package-name": "my-core"
+      "package-name": "my-core",
+      "skip-github-release": true
     },
     "crates/cli": {
       "changelog-path": "CHANGELOG.md",
@@ -20,7 +21,8 @@
       "draft": false,
       "prerelease": true,
       "initial-version": "0.2.0-dev.0",
-      "package-name": "my-cli"
+      "package-name": "my-cli",
+      "skip-github-release": true
     },
     "crates/web": {
       "changelog-path": "CHANGELOG.md",
@@ -31,13 +33,14 @@
       "draft": false,
       "prerelease": true,
       "initial-version": "0.2.0-dev.0",
-      "package-name": "my-web"
+      "package-name": "my-web",
+      "skip-github-release": true
     }
   },
   "group-pull-request-title-pattern": "chore: release ${branch}",
   "include-component-in-tag": true,
   "plugins": ["cargo-workspace"],
   "prerelease-type": "dev",
-  "pull-request-header": "## Version Update: This PR contains version updates and changelog changes.",
+  "pull-request-header": "**Version Update**: This PR contains version updates and changelog changes.",
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
 }
