@@ -1,28 +1,5 @@
 {
   "packages": {
-    ".": {
-      "changelog-path": "CHANGELOG.md",
-      "release-type": "rust",
-      "prerelease-type": "dev",
-      "include-v-in-tag": true,
-      "versioning": "prerelease",
-      "draft": false,
-      "prerelease": true,
-      "initial-version": "0.2.0-dev.0",
-      "changelog-sections": [
-        { "type": "feat", "section": "Features", "hidden": false },
-        { "type": "fix", "section": "Bug Fixes", "hidden": false },
-        { "type": "chore", "section": "Miscellaneous", "hidden": true },
-        { "type": "ci", "section": "Continuous Integration", "hidden": true },
-        { "type": "refactor", "section": "Code Refactoring", "hidden": false },
-        { "type": "docs", "section": "Documentation", "hidden": false },
-        {
-          "type": "perf",
-          "section": "Performance Improvements",
-          "hidden": false
-        }
-      ]
-    },
     "crates/core": {
       "changelog-path": "CHANGELOG.md",
       "release-type": "rust",
@@ -57,6 +34,8 @@
       "package-name": "my-web"
     }
   },
+  "group-pull-request-title-pattern": "chore: release ${branch}",
+  "include-component-in-tag": false,
   "plugins": ["cargo-workspace"],
   "prerelease-type": "dev",
   "pull-request-header": "## Version Update: This PR contains version updates and changelog changes.",
