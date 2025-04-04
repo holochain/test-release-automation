@@ -50,3 +50,21 @@ jobs:
       - name: Publish crates
         if: ${{ steps.release.outputs.release_created }}
         run: cargo workspaces publish --yes --from-git
+
+      - name: Create global GitHub Release
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Fetching latest merged release PR..."
+          PR_JSON=$(gh pr list --state merged --search "Release Please" --json number,body --limit 1 --base main)
+          PR_BODY=$(echo "$PR_JSON" | jq -r '.[0].body')
+
+          # You can pick a better source of truth for version if needed
+          VERSION=$(grep '^version' crates/core/Cargo.toml | head -n1 | cut -d '"' -f2)
+          TAG="workspace-v$VERSION"
+
+          echo "Creating global GitHub Release with tag: $TAG"
+          gh release create "$TAG" \
+            --title "Workspace Release $VERSION" \
+            --notes "$PR_BODY"
