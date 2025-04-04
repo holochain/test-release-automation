@@ -1,3 +1,6 @@
 {
-  ".": "0.0.0"
+  ".": "0.2.0-dev.0",
+  "crates/core": "0.2.0-dev.0",
+  "crates/cli": "0.2.0-dev.0",
+  "crates/web": "0.2.0-dev.0"
 }
