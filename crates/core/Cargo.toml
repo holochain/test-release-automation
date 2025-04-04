@@ -1,0 +1,13 @@
+[package]
+name = "test_ra_core"
+version = "0.2.0-dev.0"
+edition.workspace = true
+description.workspace = true
+homepage.workspace = true
+authors.workspace = true
+documentation.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
