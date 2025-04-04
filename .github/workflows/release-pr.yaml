@@ -1,0 +1,40 @@
+name: Release PR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          config-file: release-please-config.json
+          token: ${{ secrets.RELEASE_PLZ_TOKEN }}
+          target-branch: main
+
+      - uses: actions/checkout@v4
+        if: ${{ steps.release.outputs.release_created }}
+
+      - name: Set up Rust toolchain
+        if: ${{ steps.release.outputs.release_created }}
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build
+        if: ${{ steps.release.outputs.release_created }}
+        run: cargo build --release
+
+      - name: Test
+        if: ${{ steps.release.outputs.release_created }}
+        run: cargo test
+
+      - name: Login to crates.io
+        if: ${{ steps.release.outputs.release_created }}
+        run: cargo login ${{ secrets.CRATES_IO_TOKEN }}
+
+      - name: Publish
+        if: ${{ steps.release.outputs.release_created }}
+        run: exit 0
