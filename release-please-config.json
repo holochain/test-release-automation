@@ -10,7 +10,7 @@
       "prerelease": true,
       "initial-version": "0.2.0-dev.0",
       "package-name": "my-core",
-      "skip-github-release": true
+      "skip-github-release": false
     },
     "crates/cli": {
       "changelog-path": "CHANGELOG.md",
@@ -22,7 +22,7 @@
       "prerelease": true,
       "initial-version": "0.2.0-dev.0",
       "package-name": "my-cli",
-      "skip-github-release": true
+      "skip-github-release": false
     },
     "crates/web": {
       "changelog-path": "CHANGELOG.md",
@@ -34,7 +34,7 @@
       "prerelease": true,
       "initial-version": "0.2.0-dev.0",
       "package-name": "my-web",
-      "skip-github-release": true
+      "skip-github-release": false
     }
   },
   "group-pull-request-title-pattern": "chore: release ${branch}",
