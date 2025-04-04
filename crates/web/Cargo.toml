@@ -1,0 +1,16 @@
+[package]
+name = "test_ra_web"
+version = "0.2.0-dev.0"
+edition.workspace = true
+description.workspace = true
+homepage.workspace = true
+authors.workspace = true
+documentation.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+test_ra_core = { path = "../core" }
+axum = "0.8"
+tokio = { version = "1.0", features = ["full"] }
+serde_json = "1.0"
