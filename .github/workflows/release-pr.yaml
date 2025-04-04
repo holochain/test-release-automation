@@ -1,0 +1,207 @@
+name: Release PR
+on:
+  push:
+    branches:
+      - main
+      - main-0.1
+      - main-0.2
+
+jobs:
+  release-pr:
+    name: Prepare Release PR
+    if: |
+      !(contains(github.event.head_commit.message, 'Merge pull request') && contains(github.event.head_commit.message, 'release-')) &&
+      !contains(github.event.head_commit.modified, 'Cargo.toml') && 
+      !contains(github.event.head_commit.modified, 'Cargo.lock') && 
+      !contains(github.event.head_commit.modified, 'CHANGELOG.md')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # Required for cocogitto to access git history
+          fetch-depth: 0
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo bins
+        uses: actions/cache@v4
+        id: cache-cargo-bins
+        with:
+          path: |
+            ~/.cargo/bin/
+          key: ${{ runner.os }}-cargo-bins-${{ hashFiles('**/Cargo.lock') }}-cocogitto-cargo-edit
+
+      - name: Install cocogitto
+        if: steps.cache-cargo-bins.outputs.cache-hit != 'true'
+        run: cargo install cocogitto
+
+      - name: Install cargo-edit
+        if: steps.cache-cargo-bins.outputs.cache-hit != 'true'
+        run: cargo install cargo-edit
+
+      - name: Get current branch name
+        id: get_branch
+        run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
+      - name: Create timestamp
+        id: timestamp
+        run: echo "timestamp=$(date +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "holochain-release-automation2"
+          git config --global user.email "hra+gh@holochain.org"
+
+      - name: Extract current version
+        id: extract_version
+        run: |
+          CURRENT_VERSION=$(grep -m 1 'version = ' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          if [[ $CURRENT_VERSION == *-dev.* ]]; then
+            DEV_NUMBER=$(echo $CURRENT_VERSION | sed 's/.*-dev\.\([0-9]*\)/\1/')
+            NEXT_DEV_NUMBER=$((DEV_NUMBER + 1))
+            BASE_VERSION=$(echo $CURRENT_VERSION | sed 's/\(.*\)-dev\..*/\1/')
+            NEXT_VERSION="${BASE_VERSION}-dev.${NEXT_DEV_NUMBER}"
+            echo "is_dev=true" >> $GITHUB_OUTPUT
+            echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "is_dev=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Bump dev version (for main branch)
+        if: steps.extract_version.outputs.is_dev == 'true' && steps.get_branch.outputs.branch == 'main'
+        run: cog bump --version ${{ steps.extract_version.outputs.next_version }}
+
+      - name: Bump version (for non-dev or non-main branches)
+        if: steps.extract_version.outputs.is_dev != 'true' || steps.get_branch.outputs.branch != 'main'
+        run: cog bump --auto
+
+      - name: Update changelog
+        run: |
+          # Backup the original CHANGELOG.md if it exists
+          if [ -f CHANGELOG.md ]; then
+            cp CHANGELOG.md CHANGELOG.md.bak
+          fi
+
+          # Get the latest tag to use as reference
+          LATEST_TAG=$(git tag -l "v*" | sort -V | tail -n 1)
+
+          # Generate changelog just for the changes since the latest tag and filter out newlines
+          cog changelog --at ${LATEST_TAG} | awk 'NR > 1 && !NF && !prev { skip=1 } { if (!skip) print; skip=0; prev=!NF }' > CHANGELOG.new_section
+
+          # If an existing CHANGELOG exists, merge
+          if [ -f CHANGELOG.md.bak ]; then
+            # Get the header
+            head -n 2 CHANGELOG.md.bak > CHANGELOG.header
+            
+            # Get everything else from the old changelog
+            tail -n +3 CHANGELOG.md.bak > CHANGELOG.old
+            
+            # Create new CHANGELOG with: header + new section + separator + old content
+            cat CHANGELOG.header > CHANGELOG.new
+            echo "" >> CHANGELOG.new
+            echo "- - -" >> CHANGELOG.new 
+            cat CHANGELOG.new_section >> CHANGELOG.new
+            cat CHANGELOG.old >> CHANGELOG.new
+            
+            # Replace the changelog
+            mv CHANGELOG.new CHANGELOG.md
+          else
+            # If no existing changelog, use the generated one directly
+            cat CHANGELOG.new_section > CHANGELOG.md
+          fi
+
+          # Clean up
+          rm -f CHANGELOG.md.bak CHANGELOG.new_section CHANGELOG.header CHANGELOG.old 2>/dev/null || true
+
+          # Commit the updated changelog
+          git add CHANGELOG.md
+          git commit --amend --no-edit
+
+      - name: Get bumped version
+        id: bumped_version
+        run: |
+          BUMPED_VERSION=$(grep -m 1 'version = ' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "version=$BUMPED_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.RELEASE_PLZ_TOKEN }}
+          commit-message: "chore: release v${{ steps.bumped_version.outputs.version }}"
+          committer: "Holochain Release Automation <hra+gh@holochain.org>"
+          title: "chore: prepare release `v${{ steps.bumped_version.outputs.version }}`"
+          body: |
+            This PR was automatically generated to prepare a new release.
+
+            Changes:
+            - Version bump to `v${{ steps.bumped_version.outputs.version }}`
+            - Updated CHANGELOG.md
+          branch: release-${{ steps.timestamp.outputs.timestamp }}
+          base: ${{ steps.get_branch.outputs.branch }}
+          labels: release
+          delete-branch: true
+
+  publish-release:
+    name: Publish Release
+    if: |
+      contains(github.event.head_commit.message, 'Merge pull request') && 
+      contains(github.event.head_commit.message, 'release-')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo bins
+        uses: actions/cache@v4
+        id: cache-cargo-bins
+        with:
+          path: |
+            ~/.cargo/bin/
+          key: ${{ runner.os }}-cargo-bins-${{ hashFiles('**/Cargo.lock') }}-cocogitto
+
+      - name: Install cocogitto
+        if: steps.cache-cargo-bins.outputs.cache-hit != 'true'
+        run: cargo install cocogitto
+
+      - name: Get version
+        id: get_version
+        run: |
+          VERSION=$(grep -m 1 'version = ' Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag_name=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          PREV_TAG=$(git tag -l "v*" | grep -v "${{ steps.get_version.outputs.tag_name }}" | sort -V | tail -n 1)
+          TEMP_DIR=$(mktemp -d)
+          
+          cog changelog --at $PREV_TAG | awk '$0 == "" && prev == "" && prevprev == "" {next} {prevprev=prev; prev=$0; print}' > "$TEMP_DIR/release_notes.md"
+          
+          echo 'notes<<RELEASE_NOTES_EOF' >> $GITHUB_OUTPUT
+          cat "$TEMP_DIR/release_notes.md" >> $GITHUB_OUTPUT
+          echo 'RELEASE_NOTES_EOF' >> $GITHUB_OUTPUT
+          
+          echo "notes_path=$TEMP_DIR/release_notes.md" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.tag_name }}
+          name: ${{ steps.get_version.outputs.tag_name }}
+          body_path: ${{ steps.release_notes.outputs.notes_path }}
+          draft: false
+          token: ${{ secrets.RELEASE_PLZ_TOKEN }}
+
+      - name: Publish to crates.io
+        run: |
+          cargo login ${{ secrets.CARGO_REGISTRY_TOKEN }}
+          cargo publish
