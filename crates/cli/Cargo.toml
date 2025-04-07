@@ -14,5 +14,5 @@ name = "test-ra"
 path = "./src/main.rs"
 
 [dependencies]
-test_ra_core = { version = "0.2.0-dev.1", path = "../core" }
+test_ra_core = { version = "0.2.0-dev.2", path = "../core" }
 clap = { version = "4.5", features = ["derive"] }

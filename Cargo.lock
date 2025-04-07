@@ -638,14 +638,14 @@ dependencies = [
 
 [[package]]
 name = "test_ra_core"
-version = "0.2.0-dev.1"
+version = "0.2.0-dev.2"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "test_ra_web"
-version = "0.2.0-dev.1"
+version = "0.2.0-dev.2"
 dependencies = [
  "axum",
  "serde_json",
