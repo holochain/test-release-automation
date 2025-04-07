@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.0-dev.3](https://github.com/holochain/test-release-automation/compare/my-cli-v0.2.0-dev.2...my-cli-v0.2.0-dev.3) (2025-04-07)
+
+
+### Miscellaneous Chores
+
+* **cli:** override version ([453df0d](https://github.com/holochain/test-release-automation/commit/453df0db74047dad701a2f76011c190a637d3bb7))
+* **web:** override version ([ed77c15](https://github.com/holochain/test-release-automation/commit/ed77c154d40cbb2b693ab399b1f997a1dbc53233))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * test_ra_core bumped from 0.2.0-dev.1 to 0.2.0-dev.3
+
 ## [0.2.0-dev.2](https://github.com/holochain/test-release-automation/compare/my-cli-v0.2.0-dev.1...my-cli-v0.2.0-dev.2) (2025-04-07)
 
 
