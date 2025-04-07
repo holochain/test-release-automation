@@ -42,7 +42,7 @@ fn main() {
         Commands::Fibonacci { count } => {
             let sequence = calculate_fibonacci(*count);
             println!("Fibonacci sequence ({} elements):", sequence.len());
-            println!("{:?}", sequence);
+            println!("Sequence: {:?}", sequence);
         }
     }
 }
