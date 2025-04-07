@@ -4,11 +4,10 @@
       "package-name": "release",
       "release-type": "simple",
       "include-v-in-tag": true,
-      "versioning": "default",
+      "versioning": "prerelease",
       "changelog-path": "CHANGELOG.md",
       "prerelease": true,
       "initial-version": "0.2.0-dev.2",
-      "bump-patch-for-minor-pre-major": true,
       "skip-github-release": false,
       "include-component-in-tag": true
     },
