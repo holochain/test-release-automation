@@ -4,11 +4,10 @@
       "package-name": "release",
       "release-type": "simple",
       "include-v-in-tag": true,
-      "versioning": "default",
+      "versioning": "prerelease",
       "changelog-path": "CHANGELOG.md",
       "prerelease": true,
       "initial-version": "0.2.0-dev.2",
-      "bump-patch-for-minor-pre-major": true,
       "skip-github-release": false,
       "include-component-in-tag": true
     },
@@ -22,7 +21,8 @@
       "prerelease": true,
       "initial-version": "0.2.0-dev.0",
       "package-name": "my-core",
-      "skip-github-release": false
+      "skip-github-release": false,
+      "bump-minor-pre-major": false
     },
     "crates/cli": {
       "changelog-path": "CHANGELOG.md",
@@ -34,7 +34,8 @@
       "prerelease": true,
       "initial-version": "0.2.0-dev.0",
       "package-name": "my-cli",
-      "skip-github-release": false
+      "skip-github-release": false,
+      "bump-minor-pre-major": false
     },
     "crates/web": {
       "changelog-path": "CHANGELOG.md",
@@ -46,7 +47,8 @@
       "prerelease": true,
       "initial-version": "0.2.0-dev.0",
       "package-name": "my-web",
-      "skip-github-release": false
+      "skip-github-release": false,
+      "bump-minor-pre-major": false
     }
   },
   "group-pull-request-title-pattern": "chore: release ${branch}",
