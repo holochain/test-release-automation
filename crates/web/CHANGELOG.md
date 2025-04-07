@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.1](https://github.com/holochain/test-release-automation/compare/my-web-v0.1.0...my-web-v0.1.1) (2025-04-07)
+
+
+### Features
+
+* add 0.1 release branch ([cb8e531](https://github.com/holochain/test-release-automation/commit/cb8e531c234ca090eab657c295da9581bc7ceb07))
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * test_ra_core bumped from 0.2.0-dev.1 to 0.1.1
+
 ## [0.2.0-dev.1](https://github.com/holochain/test-release-automation/compare/my-web-v0.2.0-dev.0...my-web-v0.2.0-dev.1) (2025-04-04)
 
 
