@@ -2,6 +2,7 @@
   "packages": {
     "crates/core": {
       "changelog-path": "CHANGELOG.md",
+      "bump-patch-for-minor-pre-major": true,
       "release-type": "rust",
       "include-v-in-tag": true,
       "versioning": "default",
@@ -13,6 +14,7 @@
     },
     "crates/cli": {
       "changelog-path": "CHANGELOG.md",
+      "bump-patch-for-minor-pre-major": true,
       "release-type": "rust",
       "include-v-in-tag": true,
       "versioning": "default",
@@ -24,6 +26,7 @@
     },
     "crates/web": {
       "changelog-path": "CHANGELOG.md",
+      "bump-patch-for-minor-pre-major": true,
       "release-type": "rust",
       "include-v-in-tag": true,
       "versioning": "default",
