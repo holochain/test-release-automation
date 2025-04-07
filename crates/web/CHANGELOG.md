@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.1-dev.1](https://github.com/holochain/test-release-automation/compare/my-web-v0.2.0-dev.1...my-web-v0.2.1-dev.1) (2025-04-07)
+
+
+### Dependencies
+
+* The following workspace dependencies were updated
+  * dependencies
+    * test_ra_core bumped from 0.2.0-dev.1 to 0.2.0-dev.2
+
 ## [0.2.0-dev.1](https://github.com/holochain/test-release-automation/compare/my-web-v0.2.0-dev.0...my-web-v0.2.0-dev.1) (2025-04-04)
 
 
