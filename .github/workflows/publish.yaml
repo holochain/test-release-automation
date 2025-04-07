@@ -28,7 +28,7 @@ jobs:
         run: cargo install cargo-workspaces
 
       - name: Log in to crates.io
-        run: cargo login ${{ secrets.CRATES_IO_TOKEN }}
+        run: cargo login ${{ secrets.CARGO_REGISITRY_TOKEN }}
 
       - name: Publish Crates from Git Tag
         run: cargo workspaces publish --yes --from-git
