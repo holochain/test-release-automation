@@ -6,7 +6,7 @@
       "include-v-in-tag": true,
       "versioning": "default",
       "changelog-path": "CHANGELOG.md",
-      "initial-version": "0.2.0-dev.1",
+      "initial-version": "0.2.0-dev.2",
       "bump-patch-for-minor-pre-major": true,
       "skip-github-release": false,
       "include-component-in-tag": true
@@ -48,7 +48,7 @@
       "skip-github-release": false
     }
   },
-  "group-pull-request-title-pattern": "chore: release ${branch}",
+  "group-pull-request-title-pattern": "chore(${branch}): release ${version}",
   "include-component-in-tag": true,
   "plugins": ["cargo-workspace"],
   "prerelease-type": "dev",
