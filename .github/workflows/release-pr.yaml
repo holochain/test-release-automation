@@ -4,77 +4,9 @@ on:
   push:
     branches:
       - main
-      - release-please--branches--*
-  issue_comment:
-    types: [created]
 
 jobs:
-  override-release:
-    if: github.event.issue.pull_request != null && contains(github.event.comment.body, 'release-as(')
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Parse all release-as entries
-        id: parse
-        run: |
-          COMMENT="${{ github.event.comment.body }}"
-          MATCHES=$(echo "$COMMENT" | grep -oE 'release-as\([^)]+\):\s*[0-9A-Za-z.\-]+')
-
-          echo "matches<<EOF" >> $GITHUB_OUTPUT
-          echo "$MATCHES" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      - name: Get PR info
-        id: pr
-        uses: octokit/request-action@v2.x
-        with:
-          route: GET /repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_PLZ_TOKEN }}
-
-      - name: Extract base branch
-        id: branch
-        run: |
-          BASE_BRANCH=$(echo '${{ steps.pr.outputs.data }}' | jq -r .base.ref)
-          echo "base_branch=$BASE_BRANCH" >> $GITHUB_OUTPUT
-
-      - name: Checkout base branch
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ steps.branch.outputs.base_branch }}
-          token: ${{ secrets.RELEASE_PLZ_TOKEN }}
-
-      - name: Apply release-as commits
-        run: |
-          git config user.name "holochain-release-automation"
-          git config user.email "hra+gh@holochain.org"
-
-          echo "${{ steps.parse.outputs.matches }}" | while read -r LINE; do
-            COMPONENT=$(echo "$LINE" | sed -E 's/release-as\(([^)]+)\):.*/\1/')
-            VERSION=$(echo "$LINE" | sed -E 's/.*\):\s*([0-9A-Za-z.\-]+)/\1/')
-            echo "Applying release-as for $COMPONENT → $VERSION"
-
-            git commit --allow-empty -m "chore($COMPONENT): manual version override
-            release-as: $VERSION"
-          done
-
-          git push origin HEAD
-
-      - name: Comment back
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const matches = `${{ steps.parse.outputs.matches }}`.split('\n').filter(Boolean)
-            const summary = matches.map(m => `- \`${m}\``).join('\n')
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `✅ Applied the following release-as overrides to \`${{ steps.branch.outputs.base_branch }}\`:\n\n${summary}`
-            })
-
   release-pr:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4
