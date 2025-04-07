@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/holochain/test-release-automation/compare/my-cli-v0.1.1...my-cli-v0.1.2) (2025-04-07)
+
+
+### Features
+
+* **cli:** update fib sequence command ([592e960](https://github.com/holochain/test-release-automation/commit/592e960f5ab188e9a978d68066a3d677fcef52cb))
+
 ## [0.1.1](https://github.com/holochain/test-release-automation/compare/my-cli-v0.1.0...my-cli-v0.1.1) (2025-04-07)
 
 
