@@ -6,7 +6,7 @@ on:
       - main-0.1
 
 jobs:
-  release-please:
+  release-pr:
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4
@@ -15,38 +15,3 @@ jobs:
           config-file: release-please-config.json
           token: ${{ secrets.RELEASE_PLZ_TOKEN }}
           target-branch: main-0.1
-
-      - uses: actions/checkout@v4
-        if: ${{ steps.release.outputs.release_created }}
-
-      - name: Set up Rust toolchain
-        if: ${{ steps.release.outputs.release_created }}
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache cargo bins
-        uses: actions/cache@v4
-        id: cache-cargo-bins
-        with:
-          path: |
-            ~/.cargo/bin/
-          key: ${{ runner.os }}-cargo-bins-${{ hashFiles('**/Cargo.lock') }}
-
-      - name: Build
-        if: ${{ steps.release.outputs.release_created }}
-        run: cargo build --release
-
-      - name: Test
-        if: ${{ steps.release.outputs.release_created }}
-        run: cargo test
-
-      - name: Install cargo-workspaces
-        if: ${{ steps.release.outputs.release_created && steps.cache-cargo-bins.outputs.cache-hit != 'true' }}
-        run: cargo install cargo-workspaces
-
-      - name: Login to crates.io
-        if: ${{ steps.release.outputs.release_created }}
-        run: cargo login ${{ secrets.CRATES_IO_TOKEN }}
-
-      - name: Publish crates
-        if: ${{ steps.release.outputs.release_created }}
-        run: cargo workspaces publish --yes --from-git
