@@ -1,5 +1,16 @@
 {
   "packages": {
+    ".": {
+      "package-name": "release",
+      "release-type": "simple",
+      "include-v-in-tag": true,
+      "versioning": "default",
+      "changelog-path": "CHANGELOG.md",
+      "initial-version": "0.2.0-dev.1",
+      "bump-patch-for-minor-pre-major": true,
+      "skip-github-release": false,
+      "include-component-in-tag": true
+    },
     "crates/core": {
       "changelog-path": "CHANGELOG.md",
       "release-type": "rust",
