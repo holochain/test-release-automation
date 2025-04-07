@@ -1,6 +1,6 @@
 [package]
 name = "test_ra_core"
-version = "0.2.0-dev.1"
+version = "0.2.0-dev.2"
 edition.workspace = true
 description.workspace = true
 homepage.workspace = true
