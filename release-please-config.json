@@ -1,5 +1,14 @@
 {
   "packages": {
+    ".": {
+      "package-name": "release",
+      "release-type": "simple",
+      "include-v-in-tag": true,
+      "versioning": "default",
+      "changelog-path": "CHANGELOG.md",
+      "bump-patch-for-minor-pre-major": true,
+      "skip-github-release": false
+    },
     "crates/core": {
       "changelog-path": "CHANGELOG.md",
       "bump-patch-for-minor-pre-major": true,
