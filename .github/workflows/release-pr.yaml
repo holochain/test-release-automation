@@ -19,7 +19,7 @@ jobs:
         run: |
           COMMENT="${{ github.event.comment.body }}"
           MATCHES=$(echo "$COMMENT" | grep -oE 'release-as\([^)]+\):\s*[0-9A-Za-z.\-]+')
-          echo "$MATCHES" > release-as-list.txt
+
           echo "matches<<EOF" >> $GITHUB_OUTPUT
           echo "$MATCHES" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
@@ -30,7 +30,7 @@ jobs:
         with:
           route: GET /repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_PLZ_TOKEN }}
 
       - name: Extract base branch
         id: branch
@@ -42,21 +42,21 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ steps.branch.outputs.base_branch }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_PLZ_TOKEN }}
 
       - name: Apply release-as commits
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "holochain-release-automation"
+          git config user.email "hra+gh@holochain.org"
 
-          while read -r LINE; do
+          echo "${{ steps.parse.outputs.matches }}" | while read -r LINE; do
             COMPONENT=$(echo "$LINE" | sed -E 's/release-as\(([^)]+)\):.*/\1/')
             VERSION=$(echo "$LINE" | sed -E 's/.*\):\s*([0-9A-Za-z.\-]+)/\1/')
             echo "Applying release-as for $COMPONENT → $VERSION"
 
             git commit --allow-empty -m "chore($COMPONENT): manual version override
             release-as: $VERSION"
-          done < release-as-list.txt
+          done
 
           git push origin HEAD
 
