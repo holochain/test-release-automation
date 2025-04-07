@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AppConfig {
     pub app_name: String,
+    pub description: String,
     pub version: String,
     pub debug_mode: bool,
 }
@@ -10,6 +11,7 @@ pub struct AppConfig {
 pub fn get_default_config() -> AppConfig {
     AppConfig {
         app_name: "My Application".to_string(),
+        description: "A test application description".to_string(),
         version: env!("CARGO_PKG_VERSION").to_string(),
         debug_mode: false,
     }
