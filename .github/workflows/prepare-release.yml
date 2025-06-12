@@ -15,7 +15,7 @@ on:
         required: false
 
 jobs:
-  prepare:
+  call:
     # TODO reference a version once released
     uses: holochain/actions/.github/workflows/prepare-release.yml@add-release-workflows
     with:
