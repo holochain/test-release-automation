@@ -1,0 +1,25 @@
+name: Prepare a release
+
+on:
+  workflow_dispatch:
+    inputs:
+      cliff_config:
+        type: string
+        description: "Path or URL to a git-cliff configuration file"
+        default: "https://raw.githubusercontent.com/holochain/release-integration/refs/heads/main/pre-1.0-cliff.toml"
+        required: true
+      force_version:
+        type: string
+        description: "Specify the semver version for the next release, to override the default semver bump"
+        default: ""
+        required: false
+
+jobs:
+  prepare:
+    # TODO reference a version once released
+    uses: holochain/actions/.github/workflows/prepare-release.yml@add-release-workflows
+    with:
+      cliff_config: ${{ inputs.cliff_config }}
+      force_version: ${{ inputs.force_version }}
+    secrets:
+        HRA2_GITHUB_TOKEN: ${{ secrets.HRA2_GITHUB_TOKEN }}
