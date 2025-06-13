@@ -5,6 +5,60 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2025-06-13
+
+### Added
+
+- Add release prepare workflow
+- Add issue commeent trigger
+- Add changelog sections
+- Add release override job
+- Add global tag creation
+- Add publish step
+- Add versions to workspace deps
+- Add cargo-workspace plugin
+- Add ci workflow
+
+### Changed
+
+- Name the publish workflow
+- Rename crates
+- Merge pull request #87 from holochain/prepare-release-a0fb5ee
+- Prepare next release
+- Merge pull request #86 from holochain/revert-85-prepare-release-193be03
+- Revert "Prepare next release"
+- Allow manual publish run
+- Merge pull request #85 from holochain/prepare-release-193be03
+- Prepare next release
+- Add publish release workflow
+- Update core lib docs
+- Rename to call
+- Update README
+- Merge pull request #80 from holochain/release-please--branches--main
+- Release main
+- Update ci workflow
+- Chore(web): manual version override
+- Update root package versioning strategy
+- Add description to app config struct
+- Set root package as pre-release
+- Release main
+- Update release-please-config
+- Update fibonacci command
+- Update ci workflow; add top level virtual package
+- Update ci workflow
+- Release main
+- Update release-please-config
+- Integrate cargo workspaces
+- Update workspace
+- Update release-please config and manifest
+- Bootstrap releases for path: .
+- Create workspace
+
+### Fixed
+
+- Fix release-as
+- Ensure root version is bumped too
+
 ## [0.2.0-dev.4] - 2025-06-13
 
 ### Added
