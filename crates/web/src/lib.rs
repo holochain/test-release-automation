@@ -4,7 +4,7 @@ use axum::{
     Json, Router,
 };
 use std::net::SocketAddr;
-use test_ra_core::{calculate_fibonacci, get_default_config, greet, AppConfig};
+use test_ra_core2::{calculate_fibonacci, get_default_config, greet, AppConfig};
 
 pub async fn run_server(port: u16) {
     let app = Router::new()

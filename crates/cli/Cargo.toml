@@ -1,5 +1,5 @@
 [package]
-name = "test_ra_cli"
+name = "test_ra_cli2"
 version = "0.2.0-dev.3"
 edition.workspace = true
 description.workspace = true
@@ -14,5 +14,5 @@ name = "test-ra"
 path = "./src/main.rs"
 
 [dependencies]
-test_ra_core = { version = "0.2.0-dev.2", path = "../core" }
+test_ra_core2 = { version = "0.2.0-dev.2", path = "../core" }
 clap = { version = "4.5", features = ["derive"] }

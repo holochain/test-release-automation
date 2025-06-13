@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-use test_ra_core::{calculate_fibonacci, get_default_config, greet};
+use test_ra_core2::{calculate_fibonacci, get_default_config, greet};
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]

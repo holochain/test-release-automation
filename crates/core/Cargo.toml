@@ -1,5 +1,5 @@
 [package]
-name = "test_ra_core"
+name = "test_ra_core2"
 version = "0.2.0-dev.4"
 edition.workspace = true
 description.workspace = true
