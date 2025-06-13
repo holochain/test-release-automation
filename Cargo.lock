@@ -630,7 +630,7 @@ checksum = "0bf256ce5efdfa370213c1dabab5935a12e49f2c58d15e9eac2870d3b4f27263"
 
 [[package]]
 name = "test_ra_cli2"
-version = "0.2.0-dev.3"
+version = "0.1.0"
 dependencies = [
  "clap",
  "test_ra_core2",
@@ -638,14 +638,14 @@ dependencies = [
 
 [[package]]
 name = "test_ra_core2"
-version = "0.2.0-dev.4"
+version = "0.1.0"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "test_ra_web2"
-version = "0.2.0-dev.2"
+version = "0.1.0"
 dependencies = [
  "axum",
  "serde_json",
