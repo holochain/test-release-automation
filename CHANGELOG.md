@@ -1,5 +1,30 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.2.0-dev.4] - 2025-06-13
+
+### Added
+
+- Add release prepare workflow
+
+### Changed
+
+- Merge pull request #86 from holochain/revert-85-prepare-release-193be03
+- Revert "Prepare next release"
+- Allow manual publish run
+- Merge pull request #85 from holochain/prepare-release-193be03
+- Prepare next release
+- Add publish release workflow
+- Update core lib docs
+- Rename to call
+- Update README
+
+# Changelog
+
 ## [0.2.0-dev.3](https://github.com/holochain/test-release-automation/compare/release-v0.2.0-dev.2...release-v0.2.0-dev.3) (2025-04-07)
 
 
