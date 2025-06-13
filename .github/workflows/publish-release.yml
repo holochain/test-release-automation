@@ -1,4 +1,4 @@
-name: publish-release.yml
+name: Publish release
 on:
   push:
     branches:
@@ -6,7 +6,6 @@ on:
       - main-*
       - release-*
       - release/*
-  workflow_dispatch:
 
 jobs:
   call:
