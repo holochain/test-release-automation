@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+// Example application configuration
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AppConfig {
     pub app_name: String,
