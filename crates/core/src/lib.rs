@@ -9,6 +9,7 @@ pub struct AppConfig {
     pub debug_mode: bool,
 }
 
+// Get the default application configuration
 pub fn get_default_config() -> AppConfig {
     AppConfig {
         app_name: "My Application".to_string(),
