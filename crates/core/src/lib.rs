@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-// Example application configuration
+/// Example application configuration.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AppConfig {
     pub app_name: String,
@@ -9,7 +9,8 @@ pub struct AppConfig {
     pub debug_mode: bool,
 }
 
-// Get the default application configuration
+/// Get the default application configuration.
+
 pub fn get_default_config() -> AppConfig {
     AppConfig {
         app_name: "My Application".to_string(),
